@@ -27,7 +27,7 @@ import { APP_URL } from '~/lib/constants';
  * <ActionsTab />
  * ```
  */
-export function ActionsTab() {
+export default function ActionsTab() {
   // --- Hooks ---
   const { actions, added, notificationDetails, haptics, context } =
     useMiniApp();

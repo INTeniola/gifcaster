@@ -118,7 +118,7 @@ function ConnectionControls({
   );
 }
 
-export function WalletTab() {
+export default function WalletTab() {
   // --- State ---
   const [evmContractTransactionHash, setEvmContractTransactionHash] = useState<string | null>(null);
   

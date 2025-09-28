@@ -19,24 +19,42 @@ export const Footer: React.FC<FooterProps> = ({ activeTab, setActiveTab, showWal
         <span className="text-xl">🏠</span>
         <span className="text-xs mt-1">Home</span>
       </button>
+      
+      {/* Main GIF Tab - Most Important */}
       <button
-        onClick={() => setActiveTab(Tab.Actions)}
+        onClick={() => setActiveTab(Tab.Gif)}
         className={`flex flex-col items-center justify-center w-full h-full ${
-          activeTab === Tab.Actions ? 'text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
+          activeTab === Tab.Gif ? 'text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
         }`}
       >
-        <span className="text-xl">⚡</span>
-        <span className="text-xs mt-1">Actions</span>
+        <span className="text-xl">🎞️</span>
+        <span className="text-xs mt-1">GIFs</span>
       </button>
-      <button
-        onClick={() => setActiveTab(Tab.Context)}
-        className={`flex flex-col items-center justify-center w-full h-full ${
-          activeTab === Tab.Context ? 'text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
-        }`}
-      >
-        <span className="text-xl">📋</span>
-        <span className="text-xs mt-1">Context</span>
-      </button>
+
+      {/* Development-only tabs */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <button
+            onClick={() => setActiveTab(Tab.Actions)}
+            className={`flex flex-col items-center justify-center w-full h-full ${
+              activeTab === Tab.Actions ? 'text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
+            }`}
+          >
+            <span className="text-xl">⚡</span>
+            <span className="text-xs mt-1">Actions</span>
+          </button>
+          <button
+            onClick={() => setActiveTab(Tab.Context)}
+            className={`flex flex-col items-center justify-center w-full h-full ${
+              activeTab === Tab.Context ? 'text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
+            }`}
+          >
+            <span className="text-xl">📋</span>
+            <span className="text-xs mt-1">Context</span>
+          </button>
+        </>
+      )}
+      
       {showWallet && (
         <button
           onClick={() => setActiveTab(Tab.Wallet)}

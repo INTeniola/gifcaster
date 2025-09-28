@@ -19,7 +19,7 @@ import { useMiniApp } from "@neynar/react";
  * <ContextTab />
  * ```
  */
-export function ContextTab() {
+export default function ContextTab() {
   const { context } = useMiniApp();
   
   return (

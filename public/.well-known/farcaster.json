@@ -1,0 +1,10 @@
+{
+    "miniApps": [{
+      "name": "GifCaster", 
+      "description": "Perfect GIFs for your Farcaster casts",
+      "icon": "http://localhost:3000/icon-192.png",
+      "url": "http://localhost:3000",
+      "actionType": "post",
+      "version": "1.0.0"
+    }]
+  }

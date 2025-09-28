@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
 import { Footer } from "~/components/ui/Footer";
-import { HomeTab, ActionsTab, ContextTab, WalletTab } from "~/components/ui/tabs";
+import HomeTab from "~/components/ui/tabs/HomeTab";
+import ActionsTab from "~/components/ui/tabs/ActionsTab";
+import ContextTab from "~/components/ui/tabs/ContextTab";
+import WalletTab from "~/components/ui/tabs/WalletTab";
+import GifTab from "~/components/ui/tabs/GifTab";
 import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
 
@@ -14,6 +18,7 @@ export enum Tab {
   Actions = "actions",
   Context = "context",
   Wallet = "wallet",
+  Gif = "gif",
 }
 
 export interface AppProps {
@@ -35,14 +40,14 @@ export interface AppProps {
  * experience with multiple tabs for different functionality areas.
  * 
  * Features:
- * - Tab-based navigation (Home, Actions, Context, Wallet)
+ * - Tab-based navigation (Home, Actions, Context, Wallet, Gif)
  * - Farcaster mini app integration
  * - Wallet connection management
  * - Error handling and display
  * - Loading states for async operations
  * 
  * @param props - Component props
- * @param props.title - Optional title for the mini app (defaults to "Neynar Starter Kit")
+ * @param props.title - Optional title for the mini app (defaults to "GifCaster")
  * 
  * @example
  * ```tsx
@@ -50,7 +55,7 @@ export interface AppProps {
  * ```
  */
 export default function App(
-  { title }: AppProps = { title: "Neynar Starter Kit" }
+  { title }: AppProps = { title: "GifCaster" }
 ) {
   // --- Hooks ---
   const {
@@ -66,15 +71,15 @@ export default function App(
 
   // --- Effects ---
   /**
-   * Sets the initial tab to "home" when the SDK is loaded.
+   * Sets the initial tab to "gif" when the SDK is loaded.
    * 
-   * This effect ensures that users start on the home tab when they first
+   * This effect ensures that users start on the gif tab when they first
    * load the mini app. It only runs when the SDK is fully loaded to
    * prevent errors during initialization.
    */
   useEffect(() => {
     if (isSDKLoaded) {
-      setInitialTab(Tab.Home);
+      setInitialTab(Tab.Gif);
     }
   }, [isSDKLoaded, setInitialTab]);
 
@@ -113,6 +118,7 @@ export default function App(
         {currentTab === Tab.Actions && <ActionsTab />}
         {currentTab === Tab.Context && <ContextTab />}
         {currentTab === Tab.Wallet && <WalletTab />}
+        {currentTab === Tab.Gif && <GifTab user={neynarUser} />}
 
         {/* Footer with navigation */}
         <Footer activeTab={currentTab as Tab} setActiveTab={setActiveTab} showWallet={USE_WALLET} />
@@ -120,4 +126,3 @@ export default function App(
     </div>
   );
 }
-
