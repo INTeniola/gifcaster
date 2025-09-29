@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { sdk } from '@farcaster/miniapp-sdk';
-import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
 import GifTab from "~/components/ui/tabs/GifTab";
-import { useNeynarUser } from "../hooks/useNeynarUser";
 import { MoodOfTheDay } from "~/components/ui/MoodOfTheDay";
 import { ComingSoon } from "~/components/ui/ComingSoon";
 
@@ -14,11 +12,10 @@ export interface AppProps {
 }
 
 export default function App(
-  { _title }: AppProps = { _title: "VibeCast" }
+  { _title }: AppProps = { _title: "GifCaster" }
 ) {
-  const { isSDKLoaded, context, actions } = useMiniApp();
-  const { user: neynarUser, loading: isUserLoading } = useNeynarUser(context || undefined);
-  const [isInterfaceReady, setIsInterfaceReady] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   // Handle dark mode
   useEffect(() => {
@@ -27,53 +24,36 @@ export default function App(
     }
   }, []);
 
-  // Mark interface as ready after first render
+  // Initialize app with SDK
   useEffect(() => {
-    // Use requestAnimationFrame to ensure DOM is painted
-    requestAnimationFrame(() => {
-      setIsInterfaceReady(true);
-    });
+    const initializeApp = async () => {
+      try {
+        // Call ready() as per documentation
+        await sdk.actions.ready();
+        
+        // Get user context
+        const context = await sdk.context; // ✅ Await the context first
+        setUser(context.user);
+        
+        setIsReady(true);
+        console.log('GifCaster initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize app:', error);
+        // Show app anyway even if SDK fails
+        setIsReady(true);
+      }
+    };
+
+    initializeApp();
   }, []);
 
-  // Call ready when everything is loaded
-  useEffect(() => {
-    if (!isSDKLoaded || !actions?.ready) return;
-    if (!isInterfaceReady) return;
-    if (isUserLoading) return;  // Wait for user data to load
-    
-    // Hide splash screen only when interface and data are ready
-    actions.ready().catch((error) => {
-      console.error('Failed to initialize app:', error);
-    });
-  }, [isSDKLoaded, actions, isInterfaceReady, isUserLoading]);
-
-  // Show loading state until SDK is loaded
-  if (!isSDKLoaded) {
+  // Show loading state
+  if (!isReady) {
     return (
-      <div className="min-h-screen bg-background-dark text-text-primary">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          {/* Header skeleton */}
-          <div className="h-16 bg-gray-800 rounded-lg animate-pulse mb-6"></div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main content skeleton */}
-            <div className="lg:col-span-2">
-              <div className="space-y-4">
-                <div className="h-12 bg-gray-800 rounded-lg animate-pulse"></div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="aspect-square bg-gray-800 rounded-lg animate-pulse"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            {/* Sidebar skeleton */}
-            <div className="space-y-6">
-              <div className="h-40 bg-gray-800 rounded-lg animate-pulse"></div>
-              <div className="h-40 bg-gray-800 rounded-lg animate-pulse"></div>
-            </div>
-          </div>
+      <div className="min-h-screen bg-background-dark text-text-primary flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4 mx-auto"></div>
+          <p className="text-text-secondary">Loading GifCaster...</p>
         </div>
       </div>
     );
@@ -81,13 +61,13 @@ export default function App(
 
   return (
     <div className="min-h-screen bg-background-dark text-text-primary">
-      <Header _user={neynarUser} />
+      <Header _user={user} />
       
       <main className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main GIF section */}
           <div className="lg:col-span-2">
-            <GifTab _user={neynarUser} />
+            <GifTab _user={user} />
           </div>
           
           {/* Sidebar */}
