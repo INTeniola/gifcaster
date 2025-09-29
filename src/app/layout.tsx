@@ -15,7 +15,23 @@ export const metadata: Metadata = {
     icon: '/icon-192.png',
     apple: '/icon-192.png',
   },
-  manifest: '/manifest.json'
+  manifest: '/manifest.json',
+  other: {
+    'fc:miniapp': JSON.stringify({
+      version: "1",
+      imageUrl: "https://gifcaster.vercel.app/icon-512.png",
+      button: {
+        title: "Find GIFs",
+        action: {
+          type: "launch_miniapp",
+          name: "GifCaster",
+          url: "https://gifcaster.vercel.app",
+          splashImageUrl: "https://gifcaster.vercel.app/icon-192.png",
+          splashBackgroundColor: "#000000"
+        }
+      }
+    })
+  }
 };
 
 export default async function RootLayout({

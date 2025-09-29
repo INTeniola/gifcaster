@@ -1,10 +1,21 @@
 {
-    "miniApps": [{
-      "name": "GifCaster", 
-      "description": "Perfect GIFs for your Farcaster casts",
-      "icon": "http://localhost:3000/icon-192.png",
-      "url": "http://localhost:3000",
-      "actionType": "post",
-      "version": "1.0.0"
-    }]
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEzMjEzNDQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhGOWZiNTU3M2Q4NEQ3OTcxNjk2ZERmNjliMzM2ZGNhNzVmODk3MmRGIn0",
+    "payload": "eyJkb21haW4iOiJnaWZjYXN0ZXIudmVyY2VsLmFwcCJ9",
+    "signature": "MHg0MGU5OWZlOTRkYzllYmQ5MjAzNWI1YzdjNmRhNjVkODdlOGQ0ODZmZTg2YzYzYmM0MTIwMTZkNTdjMTVkY2JiNzdjZGU3NDA0ZjAyODk2MDRmMmE1NDYxZWE0NmJmNDZjZTE2YjY4ZGJjNTkzYmM1YzRkMTNiMjc5ZjU4NzMzMjFi"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "GifCaster",
+    "iconUrl": "https://gifcaster.vercel.app/icon-192.png",
+    "homeUrl": "https://gifcaster.vercel.app",
+    "splashImageUrl": "https://gifcaster.vercel.app/icon-192.png",
+    "splashBackgroundColor": "#000000",
+    "description": "Perfect GIFs for your Farcaster casts",
+    "ogTitle": "GifCaster - Perfect GIFs for Farcaster",
+    "ogDescription": "Express yourself with the perfect GIF on Farcaster",
+    "ogImageUrl": "https://gifcaster.vercel.app/icon-512.png",
+    "primaryCategory": "social",
+    "tags": ["gifs", "memes", "social"]
   }
+}
