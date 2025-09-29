@@ -1,128 +1,101 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
-import { Footer } from "~/components/ui/Footer";
-import HomeTab from "~/components/ui/tabs/HomeTab";
-import ActionsTab from "~/components/ui/tabs/ActionsTab";
-import ContextTab from "~/components/ui/tabs/ContextTab";
-import WalletTab from "~/components/ui/tabs/WalletTab";
 import GifTab from "~/components/ui/tabs/GifTab";
-import { USE_WALLET } from "~/lib/constants";
 import { useNeynarUser } from "../hooks/useNeynarUser";
-
-// --- Types ---
-export enum Tab {
-  Home = "home",
-  Actions = "actions",
-  Context = "context",
-  Wallet = "wallet",
-  Gif = "gif",
-}
+import { MoodOfTheDay } from "~/components/ui/MoodOfTheDay";
+import { ComingSoon } from "~/components/ui/ComingSoon";
 
 export interface AppProps {
-  title?: string;
+  _title?: string;
 }
 
-/**
- * App component serves as the main container for the mini app interface.
- * 
- * This component orchestrates the overall mini app experience by:
- * - Managing tab navigation and state
- * - Handling Farcaster mini app initialization
- * - Coordinating wallet and context state
- * - Providing error handling and loading states
- * - Rendering the appropriate tab content based on user selection
- * 
- * The component integrates with the Neynar SDK for Farcaster functionality
- * and Wagmi for wallet management. It provides a complete mini app
- * experience with multiple tabs for different functionality areas.
- * 
- * Features:
- * - Tab-based navigation (Home, Actions, Context, Wallet, Gif)
- * - Farcaster mini app integration
- * - Wallet connection management
- * - Error handling and display
- * - Loading states for async operations
- * 
- * @param props - Component props
- * @param props.title - Optional title for the mini app (defaults to "GifCaster")
- * 
- * @example
- * ```tsx
- * <App title="My Mini App" />
- * ```
- */
 export default function App(
-  { title }: AppProps = { title: "GifCaster" }
+  { _title }: AppProps = { _title: "VibeCast" }
 ) {
-  // --- Hooks ---
-  const {
-    isSDKLoaded,
-    context,
-    setInitialTab,
-    setActiveTab,
-    currentTab,
-  } = useMiniApp();
+  const { isSDKLoaded, context, actions } = useMiniApp();
+  const { user: neynarUser, loading: isUserLoading } = useNeynarUser(context || undefined);
+  const [isInterfaceReady, setIsInterfaceReady] = useState(false);
 
-  // --- Neynar user hook ---
-  const { user: neynarUser } = useNeynarUser(context || undefined);
-
-  // --- Effects ---
-  /**
-   * Sets the initial tab to "gif" when the SDK is loaded.
-   * 
-   * This effect ensures that users start on the gif tab when they first
-   * load the mini app. It only runs when the SDK is fully loaded to
-   * prevent errors during initialization.
-   */
+  // Handle dark mode
   useEffect(() => {
-    if (isSDKLoaded) {
-      setInitialTab(Tab.Gif);
+    if (typeof window !== 'undefined' && window.parent !== window) {
+      document.documentElement.classList.add('dark');
     }
-  }, [isSDKLoaded, setInitialTab]);
+  }, []);
 
-  // --- Early Returns ---
+  // Mark interface as ready after first render
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is painted
+    requestAnimationFrame(() => {
+      setIsInterfaceReady(true);
+    });
+  }, []);
+
+  // Call ready when everything is loaded
+  useEffect(() => {
+    if (!isSDKLoaded || !actions?.ready) return;
+    if (!isInterfaceReady) return;
+    if (isUserLoading) return;  // Wait for user data to load
+    
+    // Hide splash screen only when interface and data are ready
+    actions.ready().catch((error) => {
+      console.error('Failed to initialize app:', error);
+    });
+  }, [isSDKLoaded, actions, isInterfaceReady, isUserLoading]);
+
+  // Show loading state until SDK is loaded
   if (!isSDKLoaded) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="spinner h-8 w-8 mx-auto mb-4"></div>
-          <p>Loading SDK...</p>
+      <div className="min-h-screen bg-background-dark text-text-primary">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* Header skeleton */}
+          <div className="h-16 bg-gray-800 rounded-lg animate-pulse mb-6"></div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main content skeleton */}
+            <div className="lg:col-span-2">
+              <div className="space-y-4">
+                <div className="h-12 bg-gray-800 rounded-lg animate-pulse"></div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="aspect-square bg-gray-800 rounded-lg animate-pulse"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Sidebar skeleton */}
+            <div className="space-y-6">
+              <div className="h-40 bg-gray-800 rounded-lg animate-pulse"></div>
+              <div className="h-40 bg-gray-800 rounded-lg animate-pulse"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  // --- Render ---
   return (
-    <div
-      style={{
-        paddingTop: context?.client.safeAreaInsets?.top ?? 0,
-        paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
-        paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
-        paddingRight: context?.client.safeAreaInsets?.right ?? 0,
-      }}
-    >
-      {/* Header should be full width */}
-      <Header neynarUser={neynarUser} />
-
-      {/* Main content and footer should be centered */}
-      <div className="container py-2 pb-20">
-        {/* Main title */}
-        <h1 className="text-2xl font-bold text-center mb-4">{title}</h1>
-
-        {/* Tab content rendering */}
-        {currentTab === Tab.Home && <HomeTab />}
-        {currentTab === Tab.Actions && <ActionsTab />}
-        {currentTab === Tab.Context && <ContextTab />}
-        {currentTab === Tab.Wallet && <WalletTab />}
-        {currentTab === Tab.Gif && <GifTab user={neynarUser} />}
-
-        {/* Footer with navigation */}
-        <Footer activeTab={currentTab as Tab} setActiveTab={setActiveTab} showWallet={USE_WALLET} />
-      </div>
+    <div className="min-h-screen bg-background-dark text-text-primary">
+      <Header _user={neynarUser} />
+      
+      <main className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main GIF section */}
+          <div className="lg:col-span-2">
+            <GifTab _user={neynarUser} />
+          </div>
+          
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <MoodOfTheDay />
+            <ComingSoon />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

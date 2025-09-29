@@ -1,6 +1,19 @@
-import { TrendingUp, Search, Heart, Zap } from 'lucide-react';
+import { Search } from 'lucide-react';
+import type { Tab } from '~/components/ui/Footer';
 
-export default function HomeTab() {
+interface HomeTabProps {
+  onTabChange?: (tab: Tab) => void;
+  onFilterChange?: (filter: 'trending' | 'search') => void;
+}
+
+export default function HomeTab({ onTabChange, onFilterChange }: HomeTabProps) {
+  const navigateToGifTab = (filter: 'trending' | 'search') => {
+    if (onTabChange && onFilterChange) {
+      onFilterChange(filter);
+      onTabChange('gif');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -15,29 +28,23 @@ export default function HomeTab() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-          <TrendingUp className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+        <button
+          onClick={() => navigateToGifTab('trending')}
+          className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center hover:bg-white/20 transition-colors"
+        >
+          <span className="text-4xl mb-2 block">🔥</span>
           <h3 className="text-white font-medium mb-1">Trending</h3>
           <p className="text-white/60 text-xs">Popular GIFs right now</p>
-        </div>
+        </button>
         
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+        <button
+          onClick={() => navigateToGifTab('search')}
+          className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center hover:bg-white/20 transition-colors"
+        >
           <Search className="w-8 h-8 text-blue-400 mx-auto mb-2" />
           <h3 className="text-white font-medium mb-1">Search</h3>
           <p className="text-white/60 text-xs">Find specific GIFs</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-          <Zap className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-          <h3 className="text-white font-medium mb-1">Reactions</h3>
-          <p className="text-white/60 text-xs">Perfect for responses</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
-          <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-          <h3 className="text-white font-medium mb-1">Favorites</h3>
-          <p className="text-white/60 text-xs">Your saved GIFs</p>
-        </div>
+        </button>
       </div>
 
       {/* How it Works */}

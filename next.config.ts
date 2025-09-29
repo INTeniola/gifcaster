@@ -2,19 +2,49 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'media.giphy.com', 
-      'media0.giphy.com', 
-      'media1.giphy.com',
-      'media2.giphy.com',
-      'media3.giphy.com',
-      'media4.giphy.com'
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media.giphy.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media0.giphy.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media1.giphy.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media2.giphy.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media3.giphy.com',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media4.giphy.com',
+        pathname: '/media/**',
+      }
     ],
+    deviceSizes: [320, 420, 768, 1024, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    minimumCacheTTL: 3600,
   },
-  // Remove the experimental optimizeCss for now
-  // experimental: {
-  //   optimizeCss: true,
-  // }
+  experimental: {
+    optimizeCss: true
+  },
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 };
 
 export default nextConfig;

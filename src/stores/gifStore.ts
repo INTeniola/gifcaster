@@ -4,7 +4,7 @@ import { GiphyGif } from '~/services/giphy'
 
 interface GifStore {
   favorites: GiphyGif[]
-  recentSearches: string[]
+  _recentSearches: string[]
   addFavorite: (gif: GiphyGif) => void
   removeFavorite: (gifId: string) => void
   addRecentSearch: (term: string) => void
@@ -15,7 +15,7 @@ export const useGifStore = create<GifStore>()(
   persist(
     (set, get) => ({
       favorites: [],
-      recentSearches: [],
+      _recentSearches: [],
       
       addFavorite: (gif) => {
         const { favorites } = get()
@@ -30,13 +30,13 @@ export const useGifStore = create<GifStore>()(
       },
       
       addRecentSearch: (term) => {
-        const { recentSearches } = get()
-        const filtered = recentSearches.filter(s => s !== term)
-        set({ recentSearches: [term, ...filtered].slice(0, 5) })
+        const { _recentSearches } = get()
+        const filtered = _recentSearches.filter((s: string) => s !== term)
+        set({ _recentSearches: [term, ...filtered].slice(0, 5) })
       },
       
       clearRecentSearches: () => {
-        set({ recentSearches: [] })
+        set({ _recentSearches: [] })
       }
     }),
     {

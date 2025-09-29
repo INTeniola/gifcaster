@@ -17,7 +17,7 @@ export function Providers({
 }: {
   children: React.ReactNode;
 }) {
-  const solanaEndpoint =
+  const _solanaEndpoint =
     process.env.SOLANA_RPC_ENDPOINT || 'https://solana-rpc.publicnode.com';
   return (
     <WagmiProvider>

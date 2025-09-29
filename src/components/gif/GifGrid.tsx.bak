@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import { GiphyGif } from '~/services/giphy'
 import { useMiniApp } from '@neynar/react'
 import { useGifStore } from '~/stores/gifStore'
-import { LayoutGrid, List, Grid2x2 } from 'lucide-react'
+import { LayoutGrid, List, Grid2x2, Grid } from 'lucide-react'
 import { GifSkeleton } from '~/components/ui/Skeleton'
-import { emotions, findEmotionForGif } from '~/lib/emotions'
-// EmotionCategory type is used in the function return type
+import { theme } from '~/lib/theme'
+import { emotions, findEmotionForGif, EmotionCategory } from '~/lib/emotions'
 
 interface GifGridProps {
   gifs: GiphyGif[]
@@ -20,13 +20,6 @@ export default function GifGrid({ gifs, loading, initialFilter = 'trending', onL
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'emotions'>('emotions')
   const [loadingMore, setLoadingMore] = useState(false)
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
-  
-  const { actions } = useMiniApp()
-  const { addFavorite, removeFavorite, favorites } = useGifStore()
-  
-  const isFavorite = (gifId: string) => favorites.some(f => f.id === gifId)
 
   const groupedGifs = gifs.reduce<Record<string, GiphyGif[]>>((acc, gif) => {
     const emotion = findEmotionForGif(gif.title);
@@ -34,6 +27,13 @@ export default function GifGrid({ gifs, loading, initialFilter = 'trending', onL
     acc[category] = [...(acc[category] || []), gif];
     return acc;
   }, {});
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
+  
+  const { actions } = useMiniApp()
+  const { addFavorite, removeFavorite, favorites } = useGifStore()
+  
+  const isFavorite = (gifId: string) => favorites.some(f => f.id === gifId)
 
   useEffect(() => {
     if (!onLoadMore) return;
@@ -75,56 +75,6 @@ export default function GifGrid({ gifs, loading, initialFilter = 'trending', onL
       }
     }
   }
-
-  const renderGif = (gif: GiphyGif) => (
-    <div 
-      key={gif.id}
-      className={`
-        relative group rounded-xl overflow-hidden 
-        ${viewMode === 'list' ? 'aspect-video' : 'aspect-square'}
-        transition-transform duration-200 hover:scale-[1.02]
-        hover:ring-2 ring-primary/50 cursor-pointer
-        bg-background-card
-      `}
-      onClick={() => handleGifSelect(gif)}
-    >
-      <img
-        src={gif.images.fixed_height.url}
-        alt={gif.title}
-        className="w-full h-full object-cover"
-        loading="lazy"
-      />
-      <div className="
-        absolute inset-0 bg-gradient-to-b from-transparent to-black/60
-        opacity-0 group-hover:opacity-100 transition-opacity
-      ">
-        <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end">
-          <p className="text-white text-sm truncate flex-1">{gif.title}</p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              isFavorite(gif.id) ? removeFavorite(gif.id) : addFavorite(gif)
-            }}
-            className={`ml-2 text-white ${isFavorite(gif.id) ? 'text-pink-500' : 'hover:text-pink-500'} transition-colors`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill={isFavorite(gif.id) ? 'currentColor' : 'none'}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   if (loading && !loadingMore) {
     return (
@@ -209,7 +159,7 @@ export default function GifGrid({ gifs, loading, initialFilter = 'trending', onL
           </div>
         </div>
       )}
-
+      
       <div className={
         viewMode === 'emotions'
           ? 'space-y-8'
@@ -229,14 +179,56 @@ export default function GifGrid({ gifs, loading, initialFilter = 'trending', onL
                     <span>{emotion?.name || 'Other'}</span>
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {categoryGifs.map(renderGif)}
-                  </div>
-                </div>
-              );
-            })
-        ) : (
-          gifs.map(renderGif)
-        )}
+                    {categoryGifs.map((gif) => (
+            
+          <div 
+            key={gif.id}
+            className={`
+              relative group rounded-xl overflow-hidden 
+              ${viewMode === 'list' ? 'aspect-video' : 'aspect-square'}
+              transition-transform duration-200 hover:scale-[1.02]
+              hover:ring-2 ring-primary/50 cursor-pointer
+              bg-background-card
+            `}
+            onClick={() => handleGifSelect(gif)}
+          >
+            <img
+              src={gif.images.fixed_height.url}
+              alt={gif.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div className="
+              absolute inset-0 bg-gradient-to-b from-transparent to-black/60
+              opacity-0 group-hover:opacity-100 transition-opacity
+            ">
+              <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-between items-end">
+                <p className="text-white text-sm truncate flex-1">{gif.title}</p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    isFavorite(gif.id) ? removeFavorite(gif.id) : addFavorite(gif)
+                  }}
+                  className={`ml-2 text-white ${isFavorite(gif.id) ? 'text-pink-500' : 'hover:text-pink-500'} transition-colors`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill={isFavorite(gif.id) ? 'currentColor' : 'none'}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {onLoadMore && (
