@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { sdk } from '@farcaster/miniapp-sdk';
 import { useMiniApp } from "@neynar/react";
 import { Header } from "~/components/ui/Header";
 import GifTab from "~/components/ui/tabs/GifTab";
